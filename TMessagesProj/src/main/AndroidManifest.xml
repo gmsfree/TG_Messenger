@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -483,7 +484,7 @@ e            <intent-filter>
             android:name=".NotificationsService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="dataSync"
+            android:foregroundServiceType="dataSync|specialUse"
         />
         <service
             android:name=".NotificationRepeat"
@@ -643,6 +644,12 @@ e            <intent-filter>
             android:permission="android.permission.BIND_REMOTEVIEWS"
             android:exported="false"
             android:foregroundServiceType="dataSync"
+        />
+
+        <receiver
+            android:name=".NotificationsBroadcastReceiver"
+            android:exported="true"
+            android:enabled="true"
         />
 
 <!--        <receiver android:name=".FeedWidgetProvider">-->

@@ -55,6 +55,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.Property;
 import android.util.StateSet;
@@ -117,6 +118,7 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.NotificationsController;
+import org.telegram.messenger.NotificationsService;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
@@ -7072,7 +7074,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         askingForPermissions = true;
                         if (hasNotNotificationsPermission && NotificationPermissionDialog.shouldAsk(activity)) {
                             PermissionRequest.requestPermission(Manifest.permission.POST_NOTIFICATIONS, granted -> {
-                                if (!granted) {
+                                if(granted) {
+                                    NotificationsController.getInstance(currentAccount).showNotifications();
+                                    Intent intent = new Intent(getContext(), NotificationsService.class);
+                                    intent.setAction(NotificationsService.ACTION_RESTART_NOTIFICATION);
+                                    Log.d("NOTIFICATIONGRANT", "GRANTED");
+                                    getContext().startService(intent);
+                                } else {
                                     showDialog(new NotificationPermissionDialog(activity, !PermissionRequest.canAskPermission(Manifest.permission.POST_NOTIFICATIONS), granted2 -> {
                                         if (!granted2) return;
                                         if (!PermissionRequest.canAskPermission(Manifest.permission.POST_NOTIFICATIONS)) {

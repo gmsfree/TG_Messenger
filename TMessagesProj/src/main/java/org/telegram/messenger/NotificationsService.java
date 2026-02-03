@@ -8,21 +8,35 @@
 
 package org.telegram.messenger;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 public class NotificationsService extends Service {
-
+    public static final String ACTION_RESTART_NOTIFICATION = "org.telegram.messenger.RESTART_NOTIFICATION";
+    private static final String CHANNEL_ID = "push_service_channel";
+    private static final int NOTIFICATION_ID = 9999;
     @Override
     public void onCreate() {
         super.onCreate();
         ApplicationLoader.postInitApplication();
+        showForegroundNotification();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && ACTION_RESTART_NOTIFICATION.equals(intent.getAction())) {
+            showForegroundNotification();
+        }
         return START_STICKY;
     }
 
@@ -38,6 +52,22 @@ public class NotificationsService extends Service {
             Intent intent = new Intent("org.telegram.start");
             intent.setPackage(getPackageName());
             sendBroadcast(intent);
+        }
+    }
+
+    private void showForegroundNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,"Push Notifications Service",NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+            Log.d("NOTIFICATIONS", "started notification service");
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setShowWhen(false)
+                    .setContentTitle("Telegram")
+                    .setOngoing(true)
+                    .setSmallIcon(R.drawable.notification)
+                    .setContentText("Telegram push service").build();
+            startForeground(NOTIFICATION_ID,notification);
         }
     }
 }
