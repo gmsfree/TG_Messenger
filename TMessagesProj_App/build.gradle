@@ -193,5 +193,12 @@ android {
     lintOptions {
         checkReleaseBuilds false
     }
+
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${rootProject.name.toLowerCase()}-${variant.buildType.name}-${variant.versionName}.apk"
+        }
+    }
 }
 

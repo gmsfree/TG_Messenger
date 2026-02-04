@@ -6953,7 +6953,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 }
             }
         } else if (requestCode == PLAY_SERVICES_REQUEST_CHECK_SETTINGS) {
-            LocationController.getInstance(currentAccount).startFusedLocationRequest(resultCode == Activity.RESULT_OK);
+//            LocationController.getInstance(currentAccount).startFusedLocationRequest(resultCode == Activity.RESULT_OK);
         } else if (requestCode == WEBVIEW_SHARE_API_REQUEST_CODE) {
             if (webviewShareAPIDoneListener != null) {
                 webviewShareAPIDoneListener.run(resultCode == RESULT_OK);
