@@ -5432,10 +5432,10 @@ public class NotificationsController extends BaseController {
             intent.putExtra("currentAccount", currentAccount);
             PendingIntent contentIntent = PendingIntent.getActivity(ApplicationLoader.applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT);
 
-            NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender();
-            if (wearReplyAction != null) {
-                wearableExtender.addAction(wearReplyAction);
-            }
+//            NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender();
+//            if (wearReplyAction != null) {
+//                wearableExtender.addAction(wearReplyAction);
+//            }
             Intent msgHeardIntent = new Intent(ApplicationLoader.applicationContext, AutoMessageHeardReceiver.class);
             msgHeardIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
             msgHeardIntent.setAction("org.telegram.messenger.ACTION_MESSAGE_HEARD");
@@ -5462,12 +5462,12 @@ public class NotificationsController extends BaseController {
             }
 
             if (dismissalID != null) {
-                wearableExtender.setDismissalId(dismissalID);
-                NotificationCompat.WearableExtender summaryExtender = new NotificationCompat.WearableExtender();
-                summaryExtender.setDismissalId("summary_" + dismissalID);
-                notificationBuilder.extend(summaryExtender);
+//                wearableExtender.setDismissalId(dismissalID);
+//                NotificationCompat.WearableExtender summaryExtender = new NotificationCompat.WearableExtender();
+//                summaryExtender.setDismissalId("summary_" + dismissalID);
+//                notificationBuilder.extend(summaryExtender);
             }
-            wearableExtender.setBridgeTag("tgaccount" + selfUserId);
+//            wearableExtender.setBridgeTag("tgaccount" + selfUserId);
 
             long date;
             if (dialogKey.story) {
@@ -5491,7 +5491,6 @@ public class NotificationsController extends BaseController {
                     .setShowWhen(true)
                     .setStyle(messagingStyle)
                     .setContentIntent(contentIntent)
-                    .extend(wearableExtender)
                     .setSortKey(String.valueOf(Long.MAX_VALUE - date))
                     .setCategory(NotificationCompat.CATEGORY_MESSAGE);
 
