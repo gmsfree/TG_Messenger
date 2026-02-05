@@ -65,7 +65,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.exoplayer2.C;
-import com.google.android.gms.cast.framework.CastContext;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -92,7 +91,6 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.audioinfo.AudioInfo;
-import org.telegram.messenger.chromecast.ChromecastController;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -108,7 +106,6 @@ import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Adapters.FiltersView;
-import org.telegram.ui.CastSync;
 import org.telegram.ui.Cells.AudioPlayerCell;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.ChooseQualityLayout;
@@ -148,8 +145,6 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
     private ClippingTextViewSwitcher authorTextView;
     private ActionBarMenuItem optionsButton;
     private ChooseQualityLayout.QualityIcon optionsIcon;
-    private ActionBarMenuSubItem castItem;
-    private CastMediaRouteButton castItemButton;
     private LineProgressView progressView;
     private SeekBarView seekBarView;
     private SimpleTextView timeTextView;
@@ -1109,31 +1104,6 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         optionsButton.addSubItem(5, R.drawable.msg_download, LocaleController.getString(R.string.SaveToMusic));
         optionsButton.addSubItem(4, R.drawable.msg_message, LocaleController.getString(R.string.ShowInChat));
 
-        castItemButton = new CastMediaRouteButton(context) {
-            @Override
-            public void stateUpdated(boolean connected) {
-                updateColors();
-                if (optionsIcon != null) {
-                    optionsIcon.setCasting(CastSync.isActive(), true);
-                }
-            }
-        };
-        boolean castAvailable = true;
-        try {
-            castItemButton.setRouteSelector(CastContext.getSharedInstance(context).getMergedSelector());
-        } catch (Exception e) {
-            FileLog.e(e);
-            castAvailable = false;
-        }
-        castItemButton.setVisibility(View.INVISIBLE);
-        if (castAvailable) {
-            castItem = optionsButton.addSubItem(6, R.drawable.menu_video_chromecast, getString(R.string.VideoPlayerChromecast));
-            castItem.addView(castItemButton, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-            updateColors();
-        }
-        if (optionsIcon != null) {
-            optionsIcon.setCasting(CastSync.isActive(), true);
-        }
 
         optionsButton.addSubItem(7, R.drawable.msg_delete, getString(R.string.ProfilePlaylistRemoveFromProfile));
         optionsButton.setSubItemShown(7, false);
@@ -1647,10 +1617,6 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                 playbackSpeedButton.setBackground(Theme.createSelectorDrawable(color & 0x19ffffff, 1, dp(14)));
             }
         }
-        if (castItem != null) {
-            castItem.setEnabledByColor(castItemButton != null && castItemButton.isConnected(), getThemedColor(Theme.key_actionBarDefaultSubmenuItem), getThemedColor(Theme.key_actionBarDefaultSubmenuItemIcon), getThemedColor(Theme.key_featuredStickers_addButton));
-            castItem.setSelectorColor(castItemButton != null && castItemButton.isConnected() ? Theme.multAlpha(getThemedColor(Theme.key_featuredStickers_addButton), .10f) : getThemedColor(Theme.key_listSelector));
-        }
     }
 
     private void onSubItemClick(int id) {
@@ -1687,9 +1653,6 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             dismiss();
         } else if (id == 5) {
             saveToMusic(messageObject);
-        } else if (id == 6) {
-            ChromecastController.getInstance().setCurrentMediaAndCastIfNeeded(MediaController.getInstance().getCurrentChromecastMedia());
-            castItemButton.performClick();
         } else if (id == 7) {
             saveToProfile(messageObject, false, () -> {
                 if (savedMusicList != null) {
@@ -1805,9 +1768,6 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                         }
                     }
                 }
-            }
-            if (optionsIcon != null) {
-                optionsIcon.setCasting(CastSync.isActive(), true);
             }
         } else if (id == NotificationCenter.messagePlayingProgressDidChanged) {
             MessageObject messageObject = MediaController.getInstance().getPlayingMessageObject();

@@ -1253,7 +1253,6 @@
     <string name="QualityCached">・cached</string>
     <string name="VideoPlayerSpeed">Speed</string>
     <string name="VideoPlayerLoop">Loop</string>
-    <string name="VideoPlayerChromecast">Chromecast</string>
     <string name="SendAsFile">Send as file</string>
     <string name="SendAsFiles">Send as files</string>
     <string name="OpenUrlTitle">Open Link</string>
@@ -9246,8 +9245,6 @@
     <string name="EditorSetCoverGallery">Choose from Gallery</string>
     <string name="EditorSetCoverSave">Save Cover</string>
     <string name="PremiumAvatarToast">Subscribe to **Telegram Premium** to set premium avatars.</string>
-    <string name="ChromecastStarted">Started streaming media to Chromecast.</string>
-    <string name="ChromecastStartedTo">Started streaming media to %s.</string>
     <string name="CallInviteMembersButton">Call</string>
     <string name="GroupMessagesChargePrice">Charge Stars for Messages</string>
     <string name="GroupMessagesChargePriceInfo">If you turn this on, regular members of the group will have to pay Stars to send messages.</string>
