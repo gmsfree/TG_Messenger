@@ -31,10 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingFlowParams;
-import com.android.billingclient.api.ProductDetails;
-
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
@@ -834,32 +830,6 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                     }
                     Browser.openUrl(activity, premiumTier.giftOption.bot_url);
                     dismiss();
-                }
-            } else {
-                if (BillingController.getInstance().isReady() && premiumTier.googlePlayProductDetails != null) {
-                    TLRPC.TL_inputStorePaymentGiftPremium giftPremium = new TLRPC.TL_inputStorePaymentGiftPremium();
-                    giftPremium.user_id = MessagesController.getInstance(currentAccount).getInputUser(user);
-                    ProductDetails.OneTimePurchaseOfferDetails offerDetails = premiumTier.googlePlayProductDetails.getOneTimePurchaseOfferDetails();
-                    giftPremium.currency = offerDetails.getPriceCurrencyCode();
-                    giftPremium.amount = (long) ((offerDetails.getPriceAmountMicros() / Math.pow(10, 6)) * Math.pow(10, BillingController.getInstance().getCurrencyExp(giftPremium.currency)));
-
-                    BillingController.getInstance().addResultListener(premiumTier.giftOption.store_product, billingResult -> {
-                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                            AndroidUtilities.runOnUIThread(() -> onGiftSuccess(true));
-                        }
-                    });
-
-                    TLRPC.TL_payments_canPurchaseStore req = new TLRPC.TL_payments_canPurchaseStore();
-                    req.purpose = giftPremium;
-                    ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                        if (response instanceof TLRPC.TL_boolTrue) {
-                            BillingController.getInstance().launchBillingFlow(getBaseFragment().getParentActivity(), AccountInstance.getInstance(currentAccount), giftPremium, Collections.singletonList(BillingFlowParams.ProductDetailsParams.newBuilder()
-                                    .setProductDetails(premiumTier.googlePlayProductDetails)
-                                    .build()));
-                        } else if (error != null) {
-                            AlertsCreator.processError(currentAccount, error, getBaseFragment(), req);
-                        }
-                    }));
                 }
             }
         }
