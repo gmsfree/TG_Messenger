@@ -15,6 +15,18 @@ configurations.all {
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
 }
 
+
+def getAppId(){
+    Properties properties = new Properties()
+    properties.load(new FileInputStream("./API_KEYS"))
+    return properties.get("APP_ID")
+}
+def getAppHash(){
+    Properties properties = new Properties()
+    properties.load(new FileInputStream("./API_KEYS"))
+    return "\"" + properties.get("APP_HASH") + "\""
+}
+
 dependencies {
     implementation 'androidx.core:core:1.16.0'
     implementation 'androidx.palette:palette:1.0.0'
@@ -36,7 +48,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'com.google.guava:guava:31.1-android'
 
-    implementation 'com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1'
     implementation "com.google.mlkit:image-labeling:17.0.7"
 
     implementation "androidx.credentials:credentials:1.6.0-alpha04"
@@ -89,6 +100,8 @@ android {
         targetSdkVersion 35
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
+        buildConfigField 'int', 'APP_ID', getAppId()
+        buildConfigField 'String', 'APP_HASH', getAppHash()
 
         multiDexEnabled true
 
