@@ -9,14 +9,16 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.SparseArray;
 
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.pdf417.PDF417Reader;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MrzRecognizer {
 
@@ -42,70 +44,37 @@ public class MrzRecognizer {
 	}
 
 	private static Result recognizeBarcode(Bitmap bitmap) {
-		BarcodeDetector detector = new BarcodeDetector.Builder(ApplicationLoader.applicationContext)/*.setBarcodeFormats(Barcode.PDF417)*/.build();
 		if (bitmap.getWidth() > 1500 || bitmap.getHeight() > 1500) {
 			float scale = 1500f / Math.max(bitmap.getWidth(), bitmap.getHeight());
 			bitmap = Bitmap.createScaledBitmap(bitmap, Math.round(bitmap.getWidth() * scale), Math.round(bitmap.getHeight() * scale), true);
 		}
-		SparseArray<Barcode> barcodes = detector.detect(new Frame.Builder().setBitmap(bitmap).build());
-		for (int i = 0; i < barcodes.size(); i++) {
-			Barcode code = barcodes.valueAt(i);
-			if (code.valueFormat == Barcode.DRIVER_LICENSE && code.driverLicense != null) { // BarcodeDetector has built-in support for North American driver licenses/IDs
-				Result res = new Result();
-				res.type = "ID".equals(code.driverLicense.documentType) ? Result.TYPE_ID : Result.TYPE_DRIVER_LICENSE;
-				switch (code.driverLicense.issuingCountry) {
-					case "USA":
-						res.nationality = res.issuingCountry = "US";
-						break;
-					case "CAN":
-						res.nationality = res.issuingCountry = "CA";
-						break;
-				}
-				res.firstName = capitalize(code.driverLicense.firstName);
-				res.lastName = capitalize(code.driverLicense.lastName);
-				res.middleName = capitalize(code.driverLicense.middleName);
-				res.number = code.driverLicense.licenseNumber;
-				if (code.driverLicense.gender != null) {
-					switch (code.driverLicense.gender) {
-						case "1":
-							res.gender = Result.GENDER_MALE;
-							break;
-						case "2":
-							res.gender = Result.GENDER_FEMALE;
-							break;
-					}
-				}
-				int yearOffset, monthOffset, dayOffset;
-				if ("USA".equals(res.issuingCountry)) {
-					yearOffset = 4;
-					dayOffset = 2;
-					monthOffset = 0;
-				} else {
-					yearOffset = 0;
-					monthOffset = 4;
-					dayOffset = 6;
-				}
-				try {
-					if (code.driverLicense.birthDate != null && code.driverLicense.birthDate.length() == 8) {
-						res.birthYear = Integer.parseInt(code.driverLicense.birthDate.substring(yearOffset, yearOffset + 4));
-						res.birthMonth = Integer.parseInt(code.driverLicense.birthDate.substring(monthOffset, monthOffset + 2));
-						res.birthDay = Integer.parseInt(code.driverLicense.birthDate.substring(dayOffset, dayOffset + 2));
-					}
-					if (code.driverLicense.expiryDate != null && code.driverLicense.expiryDate.length() == 8) {
-						res.expiryYear = Integer.parseInt(code.driverLicense.expiryDate.substring(yearOffset, yearOffset + 4));
-						res.expiryMonth = Integer.parseInt(code.driverLicense.expiryDate.substring(monthOffset, monthOffset + 2));
-						res.expiryDay = Integer.parseInt(code.driverLicense.expiryDate.substring(dayOffset, dayOffset + 2));
-					}
-				} catch (NumberFormatException ignore) {
+
+		try {
+			int width = bitmap.getWidth();
+			int height = bitmap.getHeight();
+			int[] pixels = new int[width * height];
+			bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+			RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+			BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+			PDF417Reader reader = new PDF417Reader();
+			com.google.zxing.Result zxingResult = reader.decode(binaryBitmap);
+
+			if (zxingResult != null && zxingResult.getText() != null) {
+				String rawValue = zxingResult.getText();
+
+				// Try to parse as AAMVA driver license (US/Canada)
+				Result aamvaResult = parseAAMVADriverLicense(rawValue);
+				if (aamvaResult != null) {
+					return aamvaResult;
 				}
 
-				return res;
-			} else if (code.valueFormat == Barcode.TEXT && code.format == Barcode.PDF417) { // Russian driver licenses (new-ish ones) use a non-very-much-documented format
-				// base64(number|issue date|expiry date|last name|first name|middle/father name|birth date|categories|???|???)
-				// all dates are YYYYMMDD, names are capital cyrillic letters in Windows-1251, categories are comma separated
-				if (code.rawValue.matches("^[A-Za-z0-9=]+$")) {
+				// Try to parse as Russian driver license
+				// Russian driver licenses use base64 encoded data
+				if (rawValue.matches("^[A-Za-z0-9=]+$")) {
 					try {
-						byte[] _data = Base64.decode(code.rawValue, 0);
+						byte[] _data = Base64.decode(rawValue, 0);
 						String[] data = new String(_data, "windows-1251").split("\\|");
 						if (data.length >= 10) {
 							Result res = new Result();
@@ -126,6 +95,147 @@ public class MrzRecognizer {
 					} catch (Exception ignore) {
 					}
 				}
+			}
+		} catch (Exception ignore) {
+		}
+		return null;
+	}
+
+	/**
+	 * Parse AAMVA format driver license data (US and Canada)
+	 * AAMVA = American Association of Motor Vehicle Administrators
+	 */
+	private static Result parseAAMVADriverLicense(String rawData) {
+		if (rawData == null || !rawData.startsWith("@")) {
+			return null;
+		}
+
+		// AAMVA data starts with @ and contains field codes like DAC, DCS, DBB, etc.
+		HashMap<String, String> fields = new HashMap<>();
+
+		// Split by record separator or newline, then parse each field
+		String[] lines = rawData.split("[\n\r]+");
+		for (String line : lines) {
+			if (line.length() >= 3) {
+				String code = line.substring(0, 3);
+				String value = line.substring(3).trim();
+				fields.put(code, value);
+			}
+		}
+
+		// Check if this looks like an AAMVA format
+		String country = fields.get("DCG");
+		if (country == null) {
+			// Try to detect based on other fields
+			if (fields.containsKey("DAC") || fields.containsKey("DCS") || fields.containsKey("DAQ")) {
+				country = "USA"; // Default to USA if AAMVA fields present
+			} else {
+				return null;
+			}
+		}
+
+		Result res = new Result();
+		res.type = Result.TYPE_DRIVER_LICENSE;
+
+		// Document type - check for ID vs DL
+		String docType = fields.get("DCF");
+		if ("ID".equals(docType)) {
+			res.type = Result.TYPE_ID;
+		}
+
+		// Country
+		if ("USA".equals(country)) {
+			res.nationality = res.issuingCountry = "US";
+		} else if ("CAN".equals(country)) {
+			res.nationality = res.issuingCountry = "CA";
+		}
+
+		// Names - try multiple field codes
+		res.firstName = capitalize(getFirstNonNull(fields, "DAC", "DCT"));
+		res.lastName = capitalize(fields.get("DCS"));
+		res.middleName = capitalize(fields.get("DAD"));
+
+		// If no separate name fields, try full name field (DAA)
+		if (res.firstName == null && res.lastName == null) {
+			String fullName = fields.get("DAA");
+			if (fullName != null) {
+				// Format is typically "LAST,FIRST,MIDDLE" or "LAST,FIRST MIDDLE"
+				String[] nameParts = fullName.split(",");
+				if (nameParts.length >= 1) {
+					res.lastName = capitalize(nameParts[0].trim());
+				}
+				if (nameParts.length >= 2) {
+					String[] firstMiddle = nameParts[1].trim().split(" ", 2);
+					res.firstName = capitalize(firstMiddle[0]);
+					if (firstMiddle.length > 1) {
+						res.middleName = capitalize(firstMiddle[1]);
+					}
+				}
+			}
+		}
+
+		// License number
+		res.number = fields.get("DAQ");
+
+		// Gender (1 = Male, 2 = Female)
+		String gender = fields.get("DBC");
+		if ("1".equals(gender)) {
+			res.gender = Result.GENDER_MALE;
+		} else if ("2".equals(gender)) {
+			res.gender = Result.GENDER_FEMALE;
+		}
+
+		// Birth date (DBB) - format varies: MMDDYYYY (USA) or YYYYMMDD (Canada)
+		String birthDate = fields.get("DBB");
+		if (birthDate != null && birthDate.length() == 8) {
+			try {
+				if ("US".equals(res.issuingCountry)) {
+					// MMDDYYYY
+					res.birthMonth = Integer.parseInt(birthDate.substring(0, 2));
+					res.birthDay = Integer.parseInt(birthDate.substring(2, 4));
+					res.birthYear = Integer.parseInt(birthDate.substring(4, 8));
+				} else {
+					// YYYYMMDD (Canada and default)
+					res.birthYear = Integer.parseInt(birthDate.substring(0, 4));
+					res.birthMonth = Integer.parseInt(birthDate.substring(4, 6));
+					res.birthDay = Integer.parseInt(birthDate.substring(6, 8));
+				}
+			} catch (NumberFormatException ignore) {
+			}
+		}
+
+		// Expiry date (DBA) - same format logic as birth date
+		String expiryDate = fields.get("DBA");
+		if (expiryDate != null && expiryDate.length() == 8) {
+			try {
+				if ("US".equals(res.issuingCountry)) {
+					// MMDDYYYY
+					res.expiryMonth = Integer.parseInt(expiryDate.substring(0, 2));
+					res.expiryDay = Integer.parseInt(expiryDate.substring(2, 4));
+					res.expiryYear = Integer.parseInt(expiryDate.substring(4, 8));
+				} else {
+					// YYYYMMDD (Canada and default)
+					res.expiryYear = Integer.parseInt(expiryDate.substring(0, 4));
+					res.expiryMonth = Integer.parseInt(expiryDate.substring(4, 6));
+					res.expiryDay = Integer.parseInt(expiryDate.substring(6, 8));
+				}
+			} catch (NumberFormatException ignore) {
+			}
+		}
+
+		// Return result only if we got at least a name
+		if (res.firstName != null || res.lastName != null) {
+			return res;
+		}
+
+		return null;
+	}
+
+	private static String getFirstNonNull(HashMap<String, String> map, String... keys) {
+		for (String key : keys) {
+			String value = map.get(key);
+			if (value != null && !value.isEmpty()) {
+				return value;
 			}
 		}
 		return null;

@@ -78,7 +78,7 @@ public final class HybridBinarizer extends GlobalHistogramBinarizer {
       }
       int[][] blackPoints = calculateBlackPoints(luminances, subWidth, subHeight, width, height);
 
-      BitMatrix newMatrix = new BitMatrix(width, height, 1);
+      BitMatrix newMatrix = new BitMatrix(width, height);
       calculateThresholdForBlock(luminances, subWidth, subHeight, width, height, blackPoints, newMatrix);
       matrix = newMatrix;
     } else {

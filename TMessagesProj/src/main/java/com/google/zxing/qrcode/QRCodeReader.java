@@ -182,7 +182,7 @@ public class QRCodeReader implements Reader {
     }
 
     // Now just read off the bits
-    BitMatrix bits = new BitMatrix(matrixWidth, matrixHeight, 1);
+    BitMatrix bits = new BitMatrix(matrixWidth, matrixHeight);
     for (int y = 0; y < matrixHeight; y++) {
       int iOffset = top + (int) (y * moduleSize);
       for (int x = 0; x < matrixWidth; x++) {

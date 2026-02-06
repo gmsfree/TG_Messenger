@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 ZXing authors
+ * Copyright 2011 ZXing authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.google.zxing;
+package com.google.zxing.pdf417.encoder;
 
 /**
- * Enumerates barcode formats known to this package. Please keep alphabetized.
- *
- * @author Sean Owen
+ * Represents possible PDF417 barcode compaction types.
  */
-public enum BarcodeFormat {
-  /** PDF 417 2D barcode format. */
-  PDF_417,
-  /** QR Code 2D barcode format. */
-  QR_CODE
+public enum Compaction {
+
+  AUTO,
+  TEXT,
+  BYTE,
+  NUMERIC
+
 }
