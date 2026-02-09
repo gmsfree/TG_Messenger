@@ -511,6 +511,7 @@ public class LocationController extends BaseController implements NotificationCe
             try {
                 ArrayList<Long> usersToLoad = new ArrayList<>();
                 ArrayList<Long> chatsToLoad = new ArrayList<>();
+                int currentTime = getConnectionsManager().getCurrentTime();
                 SQLiteCursor cursor = getMessagesStorage().getDatabase().queryFinalized("SELECT uid, mid, date, period, message, proximity FROM sharing_locations WHERE 1");
                 while (cursor.next()) {
                     SharingLocationInfo info = new SharingLocationInfo();
@@ -525,6 +526,10 @@ public class LocationController extends BaseController implements NotificationCe
                         info.messageObject = new MessageObject(currentAccount, TLRPC.Message.TLdeserialize(data, data.readInt32(false), false), false, false);
                         MessagesStorage.addUsersAndChatsFromMessage(info.messageObject.messageOwner, usersToLoad, chatsToLoad, null);
                         data.reuse();
+                    }
+                    if (info.stopTime != Integer.MAX_VALUE && info.stopTime <= currentTime) {
+                        getMessagesStorage().getDatabase().executeFast("DELETE FROM sharing_locations WHERE uid = " + info.did).stepThis().dispose();
+                        continue;
                     }
                     result.add(info);
                     if (DialogObject.isChatDialog(info.did)) {

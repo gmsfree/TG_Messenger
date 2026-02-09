@@ -261,6 +261,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     private final static int map_list_menu_cartodark = 4;
 
     private MyLocationNewOverlay myLocationOverlay;
+    private LocationListener directLocationListener;
 
     public final static int LOCATION_TYPE_SEND = 0;
     public final static int LOCATION_TYPE_SEND_WITH_LIVE = 1;
@@ -508,6 +509,11 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         // TODO
         // proper exit, like upstream does with
         // setMyLocationEnabled(false);
+        if (directLocationListener != null) {
+            LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
+            lm.removeUpdates(directLocationListener);
+            directLocationListener = null;
+        }
         if (undoView[0] != null) {
             undoView[0].hide(true, 0);
         }
@@ -2139,37 +2145,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         myLocationOverlay.setDrawAccuracyEnabled(true);
 
         // Direct LocationManager request as fallback since osmdroid may not actually request location
-        try {
-            LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
-            if (getParentActivity() != null &&
-                (Build.VERSION.SDK_INT < 23 ||
-                 getParentActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                 getParentActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-
-                LocationListener directListener = new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        if (location != null) {
-                            AndroidUtilities.runOnUIThread(() -> {
-                                positionMarker(location);
-                                if (adapter != null) {
-                                    adapter.setGpsLocation(location);
-                                }
-                            });
-                        }
-                    }
-                };
-
-                if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, directListener);
-                }
-                if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, directListener);
-                }
-            }
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
+        registerDirectLocationListener();
 
         // Try to get initial location immediately from any available provider
         Location lastKnown = getLastLocation();
@@ -2567,6 +2543,45 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private void registerDirectLocationListener() {
+        try {
+            LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
+            if (directLocationListener != null) {
+                lm.removeUpdates(directLocationListener);
+                directLocationListener = null;
+            }
+            if (getParentActivity() != null &&
+                (Build.VERSION.SDK_INT < 23 ||
+                 getParentActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                 getParentActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+                directLocationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        if (location != null) {
+                            AndroidUtilities.runOnUIThread(() -> {
+                                positionMarker(location);
+                                if (adapter != null) {
+                                    adapter.setGpsLocation(location);
+                                }
+                            });
+                        }
+                    }
+                };
+
+                if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, directLocationListener);
+                }
+                if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, directLocationListener);
+                }
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
     private void positionMarker(Location location) {
         if (location == null) {
             return;
@@ -2867,31 +2882,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                 myLocationOverlay.enableMyLocation();
 
                 // Direct LocationManager request as fallback
-                try {
-                    LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
-                    LocationListener directListener = new LocationListener() {
-                        @Override
-                        public void onLocationChanged(Location location) {
-                            if (location != null) {
-                                AndroidUtilities.runOnUIThread(() -> {
-                                    positionMarker(location);
-                                    if (adapter != null) {
-                                        adapter.setGpsLocation(location);
-                                    }
-                                });
-                            }
-                        }
-                    };
-
-                    if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, directListener);
-                    }
-                    if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, directListener);
-                    }
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
+                registerDirectLocationListener();
             }
         } else if (id == NotificationCenter.locationPermissionDenied) {
             locationDenied = true;
@@ -2998,6 +2989,11 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             mapView.getOverlays().remove(myLocationOverlay);
         }
         myLocationOverlay.disableMyLocation();
+        if (directLocationListener != null) {
+            LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
+            lm.removeUpdates(directLocationListener);
+            directLocationListener = null;
+        }
         if (undoView[0] != null) {
             undoView[0].hide(true, 0);
         }
@@ -3035,6 +3031,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
 
             mapView.getOverlays().add(myLocationOverlay);
             myLocationOverlay.enableMyLocation();
+            registerDirectLocationListener();
         }
         onResumeCalled = true;
         fixLayoutInternal(true);

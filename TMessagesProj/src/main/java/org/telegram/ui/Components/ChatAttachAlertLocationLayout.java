@@ -193,6 +193,7 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
     private int nonClipSize;
 
     private MyLocationNewOverlay myLocationOverlay;
+    private LocationListener directLocationListener;
     private final static int map_list_menu_osm = 2;
     private final static int map_list_menu_wiki = 3;
     private final static int map_list_menu_cartodark = 4;
@@ -1030,6 +1031,11 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
         // TODO
         // proper exit, like upstream does with
         // setMyLocationEnabled(false);
+        if (directLocationListener != null) {
+            LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
+            lm.removeUpdates(directLocationListener);
+            directLocationListener = null;
+        }
         if (mapView != null) {
             mapView.setTranslationY(-AndroidUtilities.displaySize.y * 3);
         }
@@ -1360,37 +1366,7 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
         myLocationOverlay.setDrawAccuracyEnabled(true);
 
         // Direct LocationManager request as fallback since osmdroid may not actually request location
-        try {
-            LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
-            if (getParentActivity() != null &&
-                (Build.VERSION.SDK_INT < 23 ||
-                 getParentActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                 getParentActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-
-                LocationListener directListener = new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        if (location != null) {
-                            AndroidUtilities.runOnUIThread(() -> {
-                                positionMarker(location);
-                                if (adapter != null) {
-                                    adapter.setGpsLocation(location);
-                                }
-                            });
-                        }
-                    }
-                };
-
-                if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, directListener);
-                }
-                if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, directListener);
-                }
-            }
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
+        registerDirectLocationListener();
 
         // Try to get initial location immediately from any available provider
         Location lastKnown = getLastLocation();
@@ -1723,6 +1699,45 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private void registerDirectLocationListener() {
+        try {
+            LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
+            if (directLocationListener != null) {
+                lm.removeUpdates(directLocationListener);
+                directLocationListener = null;
+            }
+            if (getParentActivity() != null &&
+                (Build.VERSION.SDK_INT < 23 ||
+                 getParentActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                 getParentActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+                directLocationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        if (location != null) {
+                            AndroidUtilities.runOnUIThread(() -> {
+                                positionMarker(location);
+                                if (adapter != null) {
+                                    adapter.setGpsLocation(location);
+                                }
+                            });
+                        }
+                    }
+                };
+
+                if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, directLocationListener);
+                }
+                if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, directLocationListener);
+                }
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
     private void positionMarker() {
         if (parentAlert.isStoryLocationPicker) {
             if (parentAlert.storyLocationPickerLatLong != null) {
@@ -1819,31 +1834,7 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
                 myLocationOverlay.enableMyLocation();
 
                 // Direct LocationManager request as fallback
-                try {
-                    LocationManager lm = (LocationManager) ApplicationLoader.applicationContext.getSystemService(Context.LOCATION_SERVICE);
-                    LocationListener directListener = new LocationListener() {
-                        @Override
-                        public void onLocationChanged(Location location) {
-                            if (location != null) {
-                                AndroidUtilities.runOnUIThread(() -> {
-                                    positionMarker(location);
-                                    if (adapter != null) {
-                                        adapter.setGpsLocation(location);
-                                    }
-                                });
-                            }
-                        }
-                    };
-
-                    if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, directListener);
-                    }
-                    if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, directListener);
-                    }
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
+                registerDirectLocationListener();
             }
         } else if (id == NotificationCenter.locationPermissionDenied) {
             locationDenied = true;
