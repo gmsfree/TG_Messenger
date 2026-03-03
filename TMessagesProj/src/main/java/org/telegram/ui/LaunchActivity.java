@@ -88,7 +88,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.api.Status;
 import com.google.common.primitives.Longs;
 
 import org.telegram.PhoneFormat.PhoneFormat;
@@ -7754,12 +7753,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 }
             }
         } else if (id == NotificationCenter.needShowPlayServicesAlert) {
-            try {
-                final Status status = (Status) args[0];
-                status.startResolutionForResult(this, PLAY_SERVICES_REQUEST_CHECK_SETTINGS);
-            } catch (Throwable ignore) {
-
-            }
+            // no-op
         } else if (id == NotificationCenter.appUpdateLoading) {
             if (updateLayout != null) {
                 updateLayout.updateFileProgress(null);

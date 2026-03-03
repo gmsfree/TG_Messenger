@@ -34,10 +34,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.google.mlkit.common.MlKitException;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.label.ImageLabeling;
-import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Emoji;
@@ -839,31 +835,31 @@ public class StickerMakerView extends FrameLayout implements NotificationCenter.
     }
 
     private void segment(Bitmap bitmap, int orientation, Utilities.Callback<List<SubjectMock>> whenDone, Utilities.Callback<SegmentedObject> whenEmpty) {
-        segmentingLoading = true;
-        if (EmuDetector.with(getContext()).detect()) {
-            ArrayList<SubjectMock> list = new ArrayList<>();
-            list.add(SubjectMock.mock(sourceBitmap));
-            whenDone.run(list);
-            return;
-        }
-        InputImage inputImage = InputImage.fromBitmap(bitmap, orientation);
+//        segmentingLoading = true;
+//        if (EmuDetector.with(getContext()).detect()) {
+//            ArrayList<SubjectMock> list = new ArrayList<>();
+//            list.add(SubjectMock.mock(sourceBitmap));
+//            whenDone.run(list);
+//            return;
+//        }
+//        InputImage inputImage = InputImage.fromBitmap(bitmap, orientation);
 
 
-        if (detectedEmoji == null) {
-            ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
-                .process(inputImage)
-                .addOnSuccessListener(labels -> {
-                    if (labels.size() <= 0) {
-                        FileLog.d("objimg: no objects");
-                        return;
-                    }
-                    detectedEmoji = ObjectDetectionEmojis.labelToEmoji(labels.get(0).getIndex());
-                    FileLog.d("objimg: detected #" + labels.get(0).getIndex() + " " + detectedEmoji + " " + labels.get(0).getText());
-                    Emoji.getEmojiDrawable(detectedEmoji); // preload
-                })
-                .addOnFailureListener(e -> {
-                });
-        }
+//        if (detectedEmoji == null) {
+//            ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+//                .process(inputImage)
+//                .addOnSuccessListener(labels -> {
+//                    if (labels.size() <= 0) {
+//                        FileLog.d("objimg: no objects");
+//                        return;
+//                    }
+//                    detectedEmoji = ObjectDetectionEmojis.labelToEmoji(labels.get(0).getIndex());
+//                    FileLog.d("objimg: detected #" + labels.get(0).getIndex() + " " + detectedEmoji + " " + labels.get(0).getText());
+//                    Emoji.getEmojiDrawable(detectedEmoji); // preload
+//                })
+//                .addOnFailureListener(e -> {
+//                });
+//        }
 
         // preload emojis
         List<TLRPC.TL_availableReaction> defaultReactions = MediaDataController.getInstance(currentAccount).getEnabledReactionsList();
@@ -872,7 +868,7 @@ public class StickerMakerView extends FrameLayout implements NotificationCenter.
         }
     }
 
-    private void createSegmentImagePath(SegmentedObject object, int containerWidth, int containerHeight) {
+    private void createSegmentImagePath(StickerMakerView.SegmentedObject object, int containerWidth, int containerHeight) {
         int imageWidth = object.getImage().getWidth();
         int imageHeight = object.getImage().getHeight();
         int maxImageSize = Math.max(imageWidth, imageHeight);
@@ -1118,7 +1114,8 @@ public class StickerMakerView extends FrameLayout implements NotificationCenter.
     }
 
     public static boolean isWaitingMlKitError(Exception e) {
-        return e instanceof MlKitException && e.getMessage() != null && e.getMessage().contains("segmentation optional module to be downloaded");
+        return false;
+//        return e instanceof MlKitException && e.getMessage() != null && e.getMessage().contains("segmentation optional module to be downloaded");
     }
 
     public void setCurrentAccount(int account) {

@@ -41,12 +41,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.common.base.Charsets;
-//import com.google.mlkit.common.model.RemoteModelManager;
-//import com.google.mlkit.nl.translate.TranslateLanguage;
-//import com.google.mlkit.nl.translate.TranslateRemoteModel;
-//import com.google.mlkit.nl.translate.Translation;
-//import com.google.mlkit.nl.translate.Translator;
-//import com.google.mlkit.nl.translate.TranslatorOptions;
 
 import org.json.JSONArray;
 import org.json.JSONTokener;

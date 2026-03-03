@@ -70,6 +70,7 @@
     <string name="RequestMissedCall">Get the code via phone call</string>
     <string name="LoginAccessibilityCountryCode">Country code</string>
     <string name="SignInWithGoogle">Sign in with Google</string>
+    <string name="RecaptchaUnsupported">You see this message because the server sent a Google captcha. This build has no Google components, so the captcha cannot be shown.</string>
     <!--signup view-->
     <string name="YourName">Your name</string>
     <string name="RegisterText2">Enter your name and add a profile picture.</string>

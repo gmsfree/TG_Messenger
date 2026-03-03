@@ -1244,4 +1244,5 @@
     <string name="RemindTodayAt">\'ذكّرني اليوم عند\' HH:mm</string>
     <string name="RemindDayAt">\'ذكّرني بتاريخ\' d MMM \'عند\' HH:mm</string>
     <string name="RemindDayYearAt">\'ذكّرني بتاريخ\' d MMM yyyy \'عند\' HH:mm</string>
+    <string name="RecaptchaUnsupported">تظهر لك هذه الرسالة لأن الخادم أرسل اختبار Google captcha. لا يحتوي هذا الإصدار على مكونات Google، لذلك لا يمكن عرض اختبار التحقق.</string>
 </resources>

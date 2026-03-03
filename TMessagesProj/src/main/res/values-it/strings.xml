@@ -1538,4 +1538,5 @@
     <string name="RemindDayAt">\'Ricorda il\' d MMM \'alle\' HH:mm</string>
     <string name="RemindDayYearAt">\'Ricorda il\' d MMM yyyy \'alle\' HH:mm</string>
     <string name="BotsMenuTitle">Menu</string>
+    <string name="RecaptchaUnsupported">Vedi questo messaggio perché il server ha inviato un captcha di Google. Questa versione non ha componenti Google, quindi il captcha non può essere visualizzato.</string>
 </resources>

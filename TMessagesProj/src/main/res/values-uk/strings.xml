@@ -276,4 +276,5 @@
     <string name="RemindTodayAt">\'Нагадати сьогодні,\' HH:mm</string>
     <string name="RemindDayAt">\'Нагадати\' d MMM\',\' HH:mm</string>
     <string name="RemindDayYearAt">\'Нагадати\' d MMM yyyy\',\' HH:mm</string>
+    <string name="RecaptchaUnsupported">Ви бачите це повідомлення, тому що сервер надіслав Google captcha. Ця збірка не містить компонентів Google, тому captcha не може бути відображена.</string>
 </resources>

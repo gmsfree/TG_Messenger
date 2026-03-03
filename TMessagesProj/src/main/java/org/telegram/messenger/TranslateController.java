@@ -12,15 +12,6 @@ import android.view.inputmethod.InputMethodSubtype;
 
 import androidx.annotation.Nullable;
 
-//import com.google.mlkit.common.model.RemoteModelManager;
-//import com.google.mlkit.common.sdkinternal.MlKitContext;
-//import com.google.mlkit.common.sdkinternal.SharedPrefManager;
-//import com.google.mlkit.nl.translate.TranslateLanguage;
-//import com.google.mlkit.nl.translate.TranslateRemoteModel;
-//import com.google.mlkit.nl.translate.Translation;
-//import com.google.mlkit.nl.translate.Translator;
-//import com.google.mlkit.nl.translate.TranslatorOptions;
-
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.InputSerializedData;
 import org.telegram.tgnet.OutputSerializedData;

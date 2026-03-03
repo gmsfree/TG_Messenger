@@ -43,16 +43,12 @@ dependencies {
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
     implementation 'org.osmdroid:osmdroid-android:6.1.18'
     implementation 'com.googlecode.mp4parser:isoparser:1.0.6'
-    implementation 'com.stripe:stripe-android:2.0.2'
-    implementation 'com.google.mlkit:language-id:17.0.6'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'com.google.guava:guava:31.1-android'
 
-    implementation "com.google.mlkit:image-labeling:17.0.7"
 
     implementation "androidx.credentials:credentials:1.6.0-alpha04"
 
-//    implementation 'com.google.mlkit:translate:17.0.3'
 
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
@@ -62,7 +58,6 @@ dependencies {
             because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
         }
     }
-    implementation 'com.google.android.recaptcha:recaptcha:18.7.1'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }

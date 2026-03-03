@@ -25,9 +25,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
-import com.google.mlkit.common.MlKitException;
-import com.google.mlkit.vision.common.InputImage;
-
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
@@ -186,8 +183,9 @@ public class PhotoView extends EntityView {
     }
 
     public static boolean isWaitingMlKitError(Exception e) {
-        if (Build.VERSION.SDK_INT < 24) return false;
-        return e instanceof MlKitException && e.getMessage() != null && e.getMessage().contains("segmentation optional module to be downloaded");
+        return false;
+
+//        return e instanceof MlKitException && e.getMessage() != null && e.getMessage().contains("segmentation optional module to be downloaded");
     }
 
     public File saveSegmentedImage(int currentAccount) {

@@ -1317,4 +1317,5 @@
     <string name="RemindDayYearAt">\'Recordar el\' d \'de\' MMM \'de\' yyyy \'a las\' HH:mm</string>
     <string name="BotsMenuTitle">Menu</string>
     <string name="Understood">👍 Entendido</string>
+    <string name="RecaptchaUnsupported">Ves este mensaje porque el servidor envió un captcha de Google. Esta versión no tiene componentes de Google, por lo que el captcha no puede mostrarse.</string>
 </resources>

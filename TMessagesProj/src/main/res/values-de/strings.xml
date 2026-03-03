@@ -1376,4 +1376,5 @@
     <string name="RemindTodayAt">\'Heute um\' HH:mm \'erinnern\'</string>
     <string name="RemindDayAt">\'Am\' d MMM \'um\' HH:mm \'erinnern\'</string>
     <string name="RemindDayYearAt">\'Am\' d\'.\' MMM yyyy \'um\' HH:mm \'erinnern\'</string>
+    <string name="RecaptchaUnsupported">Sie sehen diese Meldung, weil der Server ein Google-Captcha gesendet hat. Dieser Build enthält keine Google-Komponenten, daher kann das Captcha nicht angezeigt werden.</string>
 </resources>
