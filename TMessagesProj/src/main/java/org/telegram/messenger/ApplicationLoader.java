@@ -251,7 +251,6 @@ public class ApplicationLoader extends Application {
             ContactsController.getInstance(a).checkAppAccount();
             DownloadController.getInstance(a);
         }
-        CaptchaController.request(1, 3, "", "");
 
         BillingController.getInstance().startConnection();
     }
