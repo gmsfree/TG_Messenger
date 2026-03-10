@@ -419,49 +419,8 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
 
     public static void alternativeTranslate(String text, String fromLng, String toLng, Utilities.Callback2<String, Boolean> done) {
         if (done == null) return;
-        if (fromLng == null) {
-            LanguageDetector.detectLanguage(text, lng -> {
-                alternativeTranslate(text, lng, toLng, done);
-            }, e -> {
-                alternativeTranslate(text, "en", toLng, done);
-            });
-            return;
-        }
-        final String etext = Uri.encode(text);
-        if (etext.length() > 5000) {
-            ArrayList<String> parts = cut(etext, 5000);
-            ArrayList<String> results = new ArrayList<>();
-            for (int i = 0; i < parts.size(); ++i) {
-                results.add(null);
-            }
-
-            final boolean[] fullyDone = new boolean[1];
-            for (int i = 0; i < parts.size(); ++i) {
-                final int index = i;
-                alternativeTranslateInternal(parts.get(i), fromLng, toLng, (res, rateLimit) -> {
-                    if (fullyDone[0]) return;
-                    if (res != null) {
-                        results.set(index, res);
-                        boolean allDone = true;
-                        for (int j = 0; j < results.size(); ++j) {
-                            if (results.get(j) == null) {
-                                allDone = false;
-                                break;
-                            }
-                        }
-                        if (allDone) {
-                            fullyDone[0] = true;
-                            done.run(TextUtils.join("", results), false);
-                        }
-                    } else {
-                        fullyDone[0] = true;
-                        done.run(null, rateLimit);
-                    }
-                });
-            }
-        } else {
-            alternativeTranslateInternal(etext, fromLng, toLng, done);
-        }
+        // Disabled: do not send data to external Google Translate API
+        done.run(null, false);
     }
     private static void alternativeTranslateInternal(String text, String fromLng, String toLng, Utilities.Callback2<String, Boolean> done) {
         if (done == null) return;

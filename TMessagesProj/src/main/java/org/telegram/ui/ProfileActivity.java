@@ -16027,27 +16027,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             fragment.setMessageObject(new MessageObject(UserConfig.selectedAccount, message, false, false));
             presentFragment(fragment);
         } else {
-            String domain;
-            if (BuildVars.isHuaweiStoreApp()) {
-                domain = "mapapp://navigation";
-            } else {
-                domain = "http://maps.google.com/maps";
-            }
-//                    if (myLocation != null) {
-//                        try {
-//                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, domain + "?saddr=%f,%f&daddr=%f,%f", myLocation.getLatitude(), myLocation.getLongitude(), daddrLat, daddrLong)));
-//                            getParentActivity().startActivity(intent);
-//                        } catch (Exception e) {
-//                            FileLog.e(e);
-//                        }
-//                    } else {
             try {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, domain + "?q=" + userInfo.business_location.address)));
-                getParentActivity().startActivity(intent);
+                Uri geoUri = Uri.parse("geo:0,0?q=" + Uri.encode(userInfo.business_location.address));
+                Intent geoIntent = new Intent(Intent.ACTION_VIEW, geoUri);
+                if (geoIntent.resolveActivity(getParentActivity().getPackageManager()) != null) {
+                    getParentActivity().startActivity(geoIntent);
+                } else {
+                    Uri osmUri = Uri.parse("https://www.openstreetmap.org/search?query=" + Uri.encode(userInfo.business_location.address));
+                    getParentActivity().startActivity(new Intent(Intent.ACTION_VIEW, osmUri));
+                }
             } catch (Exception e) {
                 FileLog.e(e);
             }
-//                    }
         }
 
     }

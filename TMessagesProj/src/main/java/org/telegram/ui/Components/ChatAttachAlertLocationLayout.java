@@ -394,7 +394,6 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
 
     public ChatAttachAlertLocationLayout(ChatAttachAlert alert, Context context, Theme.ResourcesProvider resourcesProvider) {
         super(alert, context, resourcesProvider);
-        AndroidUtilities.fixGoogleMapsBug();
         ChatActivity chatActivity = (ChatActivity) parentAlert.baseFragment;
         dialogId = chatActivity.getDialogId();
         if (parentAlert.isStoryLocationPicker) {

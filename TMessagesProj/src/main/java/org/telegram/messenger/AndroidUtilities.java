@@ -2783,20 +2783,11 @@ public class AndroidUtilities {
                 return String.format(Locale.US, "https://static-maps.yandex.ru/1.x/?ll=%.6f,%.6f&z=%d&size=%d,%d&l=map&scale=%d&lang=%s", lon, lat, zoom, width * scale, height * scale, scale, lang);
             }
         } else {
-            String k = MessagesController.getInstance(account).mapKey;
-            if (!TextUtils.isEmpty(k)) {
-                if (marker) {
-                    return String.format(Locale.US, "https://maps.googleapis.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&maptype=roadmap&scale=%d&markers=color:red%%7Csize:mid%%7C%.6f,%.6f&sensor=false&key=%s", lat, lon, zoom, width, height, scale, lat, lon, k);
-                } else {
-                    return String.format(Locale.US, "https://maps.googleapis.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&maptype=roadmap&scale=%d&key=%s", lat, lon, zoom, width, height, scale, k);
-                }
-            } else {
-                if (marker) {
-                    return String.format(Locale.US, "https://maps.googleapis.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&maptype=roadmap&scale=%d&markers=color:red%%7Csize:mid%%7C%.6f,%.6f&sensor=false", lat, lon, zoom, width, height, scale, lat, lon);
-                } else {
-                    return String.format(Locale.US, "https://maps.googleapis.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&maptype=roadmap&scale=%d", lat, lon, zoom, width, height, scale);
-                }
-            }
+            int n = 1 << zoom;
+            int tileX = (int) Math.floor((lon + 180.0) / 360.0 * n);
+            double latRad = Math.toRadians(lat);
+            int tileY = (int) Math.floor((1.0 - Math.log(Math.tan(latRad) + 1.0 / Math.cos(latRad)) / Math.PI) / 2.0 * n);
+            return String.format(Locale.US, "https://tile.openstreetmap.org/%d/%d/%d.png", zoom, tileX, tileY);
         }
     }
 
@@ -4748,14 +4739,6 @@ public class AndroidUtilities {
         return null;
     }
 
-    public static void fixGoogleMapsBug() { //https://issuetracker.google.com/issues/154855417#comment301
-        SharedPreferences googleBug = ApplicationLoader.applicationContext.getSharedPreferences("google_bug_154855417", Context.MODE_PRIVATE);
-        if (!googleBug.contains("fixed")) {
-            File corruptedZoomTables = new File(ApplicationLoader.getFilesDirFixed(), "ZoomTables.data");
-            corruptedZoomTables.delete();
-            googleBug.edit().putBoolean("fixed", true).apply();
-        }
-    }
 
     public static CharSequence concat(CharSequence... text) {
         if (text.length == 0) {

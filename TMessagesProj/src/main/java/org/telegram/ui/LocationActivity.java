@@ -466,7 +466,6 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     public LocationActivity(int type) {
         super();
         locationType = type;
-        AndroidUtilities.fixGoogleMapsBug();
     }
 
     private SharedMediaLayout sharedMediaLayout;
@@ -597,7 +596,12 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                     try {
                         double lat = messageObject.messageOwner.media.geo.lat;
                         double lon = messageObject.messageOwner.media.geo._long;
-                        getParentActivity().startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + lat + "," + lon + "?q=" + lat + "," + lon)));
+                        Intent geoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "geo:%f,%f?q=%f,%f", lat, lon, lat, lon)));
+                        if (geoIntent.resolveActivity(getParentActivity().getPackageManager()) != null) {
+                            getParentActivity().startActivity(geoIntent);
+                        } else {
+                            getParentActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "https://www.openstreetmap.org/?mlat=%f&mlon=%f", lat, lon))));
+                        }
                     } catch (Exception e) {
                         FileLog.e(e);
                     }
@@ -767,7 +771,12 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                     try {
                         double lat = messageObject.messageOwner.media.geo.lat;
                         double lon = messageObject.messageOwner.media.geo._long;
-                        getParentActivity().startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + lat + "," + lon + "?q=" + lat + "," + lon)));
+                        Intent geoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "geo:%f,%f?q=%f,%f", lat, lon, lat, lon)));
+                        if (geoIntent.resolveActivity(getParentActivity().getPackageManager()) != null) {
+                            getParentActivity().startActivity(geoIntent);
+                        } else {
+                            getParentActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, "https://www.openstreetmap.org/?mlat=%f&mlon=%f", lat, lon))));
+                        }
                     } catch (Exception e) {
                         FileLog.e(e);
                     }
@@ -1562,26 +1571,17 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             daddrLat = chatLocation.geo_point.lat;
             daddrLong = chatLocation.geo_point._long;
         }
-        String domain;
-        if (BuildVars.isHuaweiStoreApp()) {
-            domain = "mapapp://navigation";
-        } else {
-            domain = "http://maps.google.com/maps";
-        }
-        if (myLocation != null) {
-            try {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, domain + "?saddr=%f,%f&daddr=%f,%f", myLocation.getLatitude(), myLocation.getLongitude(), daddrLat, daddrLong)));
-                getParentActivity().startActivity(intent);
-            } catch (Exception e) {
-                FileLog.e(e);
+        try {
+            Uri geoUri = Uri.parse(String.format(Locale.US, "geo:%f,%f", daddrLat, daddrLong));
+            Intent geoIntent = new Intent(Intent.ACTION_VIEW, geoUri);
+            if (geoIntent.resolveActivity(getParentActivity().getPackageManager()) != null) {
+                getParentActivity().startActivity(geoIntent);
+            } else {
+                Uri osmUri = Uri.parse(String.format(Locale.US, "https://www.openstreetmap.org/?mlat=%f&mlon=%f", daddrLat, daddrLong));
+                getParentActivity().startActivity(new Intent(Intent.ACTION_VIEW, osmUri));
             }
-        } else {
-            try {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Locale.US, domain + "?saddr=&daddr=%f,%f", daddrLat, daddrLong)));
-                getParentActivity().startActivity(intent);
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
+        } catch (Exception e) {
+            FileLog.e(e);
         }
     }
 

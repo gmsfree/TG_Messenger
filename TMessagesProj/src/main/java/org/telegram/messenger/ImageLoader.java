@@ -554,7 +554,7 @@ public class ImageLoader {
             if (!isCancelled()) {
                 try {
                     String location = cacheImage.imageLocation.path;
-                    if (location.startsWith("https://static-maps") || location.startsWith("https://maps.googleapis")) {
+                    if (location.startsWith("https://static-maps") || location.startsWith("https://tile.openstreetmap.org")) {
                         int provider = MessagesController.getInstance(cacheImage.currentAccount).mapProvider;
                         if (provider == 3 || provider == 4) {
                             WebFile webFile = testWebFile.get(location);
