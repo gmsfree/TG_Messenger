@@ -23,8 +23,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import com.google.mlkit.common.model.RemoteModelManager;
-//import com.google.mlkit.nl.translate.TranslateRemoteModel;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLog;

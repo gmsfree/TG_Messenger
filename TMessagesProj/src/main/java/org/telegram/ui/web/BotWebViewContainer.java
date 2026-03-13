@@ -3383,7 +3383,7 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
 
     public static WebResourceResponse proxyTON(String method, String url, Map<String, String> headers) {
         try {
-            url = Browser.replaceHostname(Uri.parse(url), rotateTONHost(AndroidUtilities.getHostAuthority(url)), "https");
+            url = Browser.replaceHostname(Uri.parse(url), AndroidUtilities.getHostAuthority(url), "https");
             URL urlObj = new URL(url);
             HttpURLConnection urlConnection = (HttpURLConnection) urlObj.openConnection();
             urlConnection.setRequestMethod(method);
@@ -4966,34 +4966,23 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
         FileLog.d("[webviewcontainer] #" + tag + " " + s);
     }
 
-    private static HashMap<String, String> rotatedTONHosts;
-
     private static String tonsite2magic(String url) {
         if (url == null) return url;
         final Uri uri = Uri.parse(url);
         if (isTonsite(uri)) {
-            String tonsite_host = AndroidUtilities.getHostAuthority(url);
-            try {
-                tonsite_host = IDN.toASCII(tonsite_host, IDN.ALLOW_UNASSIGNED);
-            } catch (Exception e) {}
-            String magic_host = rotateTONHost(tonsite_host);
-            if (rotatedTONHosts == null) rotatedTONHosts = new HashMap<>();
-            rotatedTONHosts.put(magic_host, tonsite_host);
-            url = Browser.replaceHostname(Uri.parse(url), magic_host, "https");
+            String host = AndroidUtilities.getHostAuthority(url);
+            url = Browser.replaceHostname(uri, host, "https");
         }
         return url;
     }
 
     public static String magic2tonsite(String url) {
-        if (rotatedTONHosts == null) return url;
         if (url == null) return url;
         String host = AndroidUtilities.getHostAuthority(url);
-        if (host == null || !host.endsWith("." + MessagesController.getInstance(UserConfig.selectedAccount).tonProxyAddress)) {
-            return url;
+        if (host != null && (host.endsWith(".ton") || host.endsWith(".adnl"))) {
+            return Browser.replace(Uri.parse(url), "tonsite", null, host, null);
         }
-        String tonsite_host = rotatedTONHosts.get(host);
-        if (tonsite_host == null) return url;
-        return Browser.replace(Uri.parse(url), "tonsite", null, tonsite_host, null);
+        return url;
     }
 
     private static JSONObject obj(String key1, Object value) {
