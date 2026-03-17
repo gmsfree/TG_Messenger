@@ -53,7 +53,6 @@ public class LiteMode {
         FLAG_ANIMATED_EMOJI_CHAT_PREMIUM |
         FLAG_ANIMATED_EMOJI_KEYBOARD_PREMIUM |
         FLAG_ANIMATED_EMOJI_REACTIONS_PREMIUM |
-        FLAG_AUTOPLAY_GIFS |
         FLAG_CHAT_THANOS |
         FLAG_PARTICLES
     ); // 198684
@@ -64,8 +63,6 @@ public class LiteMode {
         FLAG_ANIMATED_EMOJI_CHAT |
         FLAG_CHAT_FORUM_TWOCOLUMN |
         FLAG_CALLS_ANIMATIONS |
-        FLAG_AUTOPLAY_VIDEOS |
-        FLAG_AUTOPLAY_GIFS |
         FLAG_CHAT_THANOS |
         FLAG_PARTICLES
     ); // 204383
@@ -79,8 +76,6 @@ public class LiteMode {
         FLAG_CHAT_SCALE |
         FLAG_CHAT_THANOS |
         FLAG_CALLS_ANIMATIONS |
-        FLAG_AUTOPLAY_VIDEOS |
-        FLAG_AUTOPLAY_GIFS |
         FLAG_PARTICLES
     ); // 262143
     public static int PRESET_POWER_SAVER = 0;

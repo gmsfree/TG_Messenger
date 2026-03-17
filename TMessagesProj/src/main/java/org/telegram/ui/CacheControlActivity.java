@@ -2589,7 +2589,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     slideChooseView2.setCallback(i -> {
                         SharedConfig.getPreferences().edit().putInt("cache_limit", options.get(i)).apply();
                     });
-                    int currentLimit = SharedConfig.getPreferences().getInt("cache_limit", Integer.MAX_VALUE);
+                    int currentLimit = SharedConfig.getPreferences().getInt("cache_limit", 5);
                     int i = options.indexOf(currentLimit);
                     if (i < 0) {
                         i = options.size() - 1;
