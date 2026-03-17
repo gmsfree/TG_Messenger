@@ -213,7 +213,7 @@ public class DialogsHintCell extends BlurredFrameLayout {
         if (width <= 0) {
             width = AndroidUtilities.displaySize.x;
         }
-        contentView.measure(
+        parentView.measure(
                 MeasureSpec.makeMeasureSpec(width - getPaddingLeft() - getPaddingRight(), MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(AndroidUtilities.displaySize.y, MeasureSpec.AT_MOST)
         );
