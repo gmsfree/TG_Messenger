@@ -1,22 +1,16 @@
 package org.telegram.messenger.video;
 
 
-import static com.googlecode.mp4parser.authoring.tracks.h265.NalUnitTypes.NAL_TYPE_PPS_NUT;
-import static com.googlecode.mp4parser.authoring.tracks.h265.NalUnitTypes.NAL_TYPE_PREFIX_SEI_NUT;
-import static com.googlecode.mp4parser.authoring.tracks.h265.NalUnitTypes.NAL_TYPE_SPS_NUT;
-import static com.googlecode.mp4parser.authoring.tracks.h265.NalUnitTypes.NAL_TYPE_VPS_NUT;
 
 import androidx.annotation.NonNull;
 
-import com.coremedia.iso.IsoTypeReader;
-import com.coremedia.iso.IsoTypeWriter;
-import com.coremedia.iso.boxes.SampleDescriptionBox;
-import com.coremedia.iso.boxes.sampleentry.VisualSampleEntry;
-import com.google.android.exoplayer2.util.Log;
-import com.googlecode.mp4parser.authoring.tracks.CleanInputStream;
-import com.googlecode.mp4parser.authoring.tracks.h265.H265TrackImpl;
-import com.googlecode.mp4parser.authoring.tracks.h265.NalUnitHeader;
-import com.googlecode.mp4parser.util.ByteBufferByteChannel;
+import org.mp4parser.boxes.sampleentry.VisualSampleEntry;
+import org.mp4parser.muxer.tracks.CleanInputStream;
+import org.mp4parser.muxer.tracks.h265.H265TrackImpl;
+import org.mp4parser.tools.IsoTypeReader;
+import org.mp4parser.tools.IsoTypeWriter;
+import org.mp4parser.boxes.iso14496.part12.SampleDescriptionBox;
+import org.mp4parser.tools.ByteBufferByteChannel;
 
 import org.telegram.messenger.Utilities;
 
@@ -73,6 +67,10 @@ public class HevcDecoderConfigurationRecord {
     public HevcDecoderConfigurationRecord() {
     }
 
+    private static final int NAL_TYPE_VPS_NUT  = 32;
+    private static final int NAL_TYPE_SPS_NUT  = 33;
+    private static final int NAL_TYPE_PPS_NUT  = 34;
+    private static final int NAL_TYPE_PREFIX_SEI_NUT = 39;
 
     public void parse(ByteBuffer content) {
         configurationVersion = IsoTypeReader.readUInt8(content);

@@ -1,7 +1,8 @@
 package org.telegram.messenger.video;
 
-import com.googlecode.mp4parser.AbstractBox;
 
+
+import org.mp4parser.support.AbstractBox;
 
 import java.nio.ByteBuffer;
 import java.util.List;

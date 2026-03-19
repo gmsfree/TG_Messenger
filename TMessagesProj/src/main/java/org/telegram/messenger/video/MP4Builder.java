@@ -12,32 +12,32 @@ import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import com.coremedia.iso.BoxParser;
-import com.coremedia.iso.IsoFile;
-import com.coremedia.iso.IsoTypeWriter;
-import com.coremedia.iso.boxes.Box;
-import com.coremedia.iso.boxes.CompositionTimeToSample;
-import com.coremedia.iso.boxes.Container;
-import com.coremedia.iso.boxes.DataEntryUrlBox;
-import com.coremedia.iso.boxes.DataInformationBox;
-import com.coremedia.iso.boxes.DataReferenceBox;
-import com.coremedia.iso.boxes.FileTypeBox;
-import com.coremedia.iso.boxes.HandlerBox;
-import com.coremedia.iso.boxes.MediaBox;
-import com.coremedia.iso.boxes.MediaHeaderBox;
-import com.coremedia.iso.boxes.MediaInformationBox;
-import com.coremedia.iso.boxes.MovieBox;
-import com.coremedia.iso.boxes.MovieHeaderBox;
-import com.coremedia.iso.boxes.SampleSizeBox;
-import com.coremedia.iso.boxes.SampleTableBox;
-import com.coremedia.iso.boxes.SampleToChunkBox;
-import com.coremedia.iso.boxes.StaticChunkOffsetBox;
-import com.coremedia.iso.boxes.SyncSampleBox;
-import com.coremedia.iso.boxes.TimeToSampleBox;
-import com.coremedia.iso.boxes.TrackBox;
-import com.coremedia.iso.boxes.TrackHeaderBox;
-import com.googlecode.mp4parser.DataSource;
-import com.googlecode.mp4parser.util.Matrix;
+import org.mp4parser.BoxParser;
+import org.mp4parser.IsoFile;
+import org.mp4parser.tools.IsoTypeWriter;
+import org.mp4parser.Box;
+import org.mp4parser.boxes.iso14496.part12.CompositionTimeToSample;
+import org.mp4parser.Container;
+import org.mp4parser.boxes.iso14496.part12.DataEntryUrlBox;
+import org.mp4parser.boxes.iso14496.part12.DataInformationBox;
+import org.mp4parser.boxes.iso14496.part12.DataReferenceBox;
+import org.mp4parser.boxes.iso14496.part12.FileTypeBox;
+import org.mp4parser.boxes.iso14496.part12.HandlerBox;
+import org.mp4parser.boxes.iso14496.part12.MediaBox;
+import org.mp4parser.boxes.iso14496.part12.MediaHeaderBox;
+import org.mp4parser.boxes.iso14496.part12.MediaInformationBox;
+import org.mp4parser.boxes.iso14496.part12.MovieBox;
+import org.mp4parser.boxes.iso14496.part12.MovieHeaderBox;
+import org.mp4parser.boxes.iso14496.part12.SampleSizeBox;
+import org.mp4parser.boxes.iso14496.part12.SampleTableBox;
+import org.mp4parser.boxes.iso14496.part12.SampleToChunkBox;
+import org.mp4parser.boxes.iso14496.part12.StaticChunkOffsetBox;
+import org.mp4parser.boxes.iso14496.part12.SyncSampleBox;
+import org.mp4parser.boxes.iso14496.part12.TimeToSampleBox;
+import org.mp4parser.boxes.iso14496.part12.TrackBox;
+import org.mp4parser.boxes.iso14496.part12.TrackHeaderBox;
+import org.mp4parser.muxer.DataSource;
+import org.mp4parser.support.Matrix;
 
 import org.telegram.messenger.AndroidUtilities;
 
@@ -310,10 +310,12 @@ public class MP4Builder {
             return (contentSize + 8) < 4294967296L;
         }
 
-        @Override
-        public void parse(DataSource dataSource, ByteBuffer header, long contentSize, BoxParser boxParser) {
+//        @Override
+//        public void parse(DataSource dataSource, ByteBuffer header, long contentSize, BoxParser boxParser) {
+//
+//        }
 
-        }
+
 
         public void getBox(WritableByteChannel writableByteChannel) throws IOException {
             ByteBuffer bb = ByteBuffer.allocate(16);

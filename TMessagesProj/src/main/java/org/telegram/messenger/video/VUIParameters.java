@@ -1,7 +1,8 @@
 package org.telegram.messenger.video;
 
-import com.googlecode.mp4parser.h264.model.AspectRatio;
-import com.googlecode.mp4parser.h264.model.HRDParameters;
+
+import org.mp4parser.muxer.tracks.h264.parsing.model.AspectRatio;
+import org.mp4parser.muxer.tracks.h264.parsing.model.HRDParameters;
 
 public class VUIParameters {
 

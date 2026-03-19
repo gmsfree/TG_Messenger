@@ -13,18 +13,18 @@ import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import com.coremedia.iso.boxes.AbstractMediaHeaderBox;
-import com.coremedia.iso.boxes.SampleDescriptionBox;
-import com.coremedia.iso.boxes.SoundMediaHeaderBox;
-import com.coremedia.iso.boxes.VideoMediaHeaderBox;
-import com.mp4parser.iso14496.part15.AvcConfigurationBox;
-import com.coremedia.iso.boxes.sampleentry.AudioSampleEntry;
-import com.coremedia.iso.boxes.sampleentry.VisualSampleEntry;
-import com.googlecode.mp4parser.boxes.mp4.ESDescriptorBox;
-import com.googlecode.mp4parser.boxes.mp4.objectdescriptors.AudioSpecificConfig;
-import com.googlecode.mp4parser.boxes.mp4.objectdescriptors.DecoderConfigDescriptor;
-import com.googlecode.mp4parser.boxes.mp4.objectdescriptors.ESDescriptor;
-import com.googlecode.mp4parser.boxes.mp4.objectdescriptors.SLConfigDescriptor;
+import org.mp4parser.boxes.iso14496.part12.AbstractMediaHeaderBox;
+import org.mp4parser.boxes.iso14496.part12.SampleDescriptionBox;
+import org.mp4parser.boxes.iso14496.part12.SoundMediaHeaderBox;
+import org.mp4parser.boxes.iso14496.part12.VideoMediaHeaderBox;
+import org.mp4parser.boxes.iso14496.part15.AvcConfigurationBox;
+import org.mp4parser.boxes.sampleentry.AudioSampleEntry;
+import org.mp4parser.boxes.sampleentry.VisualSampleEntry;
+import org.mp4parser.boxes.iso14496.part14.ESDescriptorBox;
+import org.mp4parser.boxes.iso14496.part1.objectdescriptors.AudioSpecificConfig;
+import org.mp4parser.boxes.iso14496.part1.objectdescriptors.DecoderConfigDescriptor;
+import org.mp4parser.boxes.iso14496.part1.objectdescriptors.ESDescriptor;
+import org.mp4parser.boxes.iso14496.part1.objectdescriptors.SLConfigDescriptor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -109,19 +109,19 @@ public class Track {
                 AvcConfigurationBox avcConfigurationBox = new AvcConfigurationBox();
 
                 if (format.getByteBuffer("csd-0") != null) {
-                    ArrayList<byte[]> spsArray = new ArrayList<>();
+                    ArrayList<ByteBuffer> spsArray = new ArrayList<>();
                     ByteBuffer spsBuff = format.getByteBuffer("csd-0");
                     spsBuff.position(4);
                     byte[] spsBytes = new byte[spsBuff.remaining()];
                     spsBuff.get(spsBytes);
-                    spsArray.add(spsBytes);
+                    spsArray.add(ByteBuffer.wrap(spsBytes));
 
-                    ArrayList<byte[]> ppsArray = new ArrayList<>();
+                    ArrayList<ByteBuffer> ppsArray = new ArrayList<>();
                     ByteBuffer ppsBuff = format.getByteBuffer("csd-1");
                     ppsBuff.position(4);
                     byte[] ppsBytes = new byte[ppsBuff.remaining()];
                     ppsBuff.get(ppsBytes);
-                    ppsArray.add(ppsBytes);
+                    ppsArray.add(ByteBuffer.wrap(ppsBytes));
                     avcConfigurationBox.setSequenceParameterSets(spsArray);
                     avcConfigurationBox.setPictureParameterSets(ppsArray);
                 }

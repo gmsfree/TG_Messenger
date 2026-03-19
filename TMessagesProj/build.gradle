@@ -42,7 +42,8 @@ dependencies {
     compileOnly 'org.checkerframework:checker-qual:2.5.2'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
     implementation 'org.osmdroid:osmdroid-android:6.1.18'
-    implementation 'com.googlecode.mp4parser:isoparser:1.0.6'
+    implementation 'org.mp4parser:muxer:1.9.56'
+    implementation 'org.mp4parser:isoparser:1.9.56'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'com.google.guava:guava:31.1-android'
 
