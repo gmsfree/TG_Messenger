@@ -186,9 +186,7 @@ public class Track {
                 } else {
                     avcConfigurationBox.setAvcProfileIndication(100);
                 }
-                avcConfigurationBox.setBitDepthLumaMinus8(-1);
-                avcConfigurationBox.setBitDepthChromaMinus8(-1);
-                avcConfigurationBox.setChromaFormat(-1);
+                avcConfigurationBox.setHasExts(false);
                 avcConfigurationBox.setConfigurationVersion(1);
                 avcConfigurationBox.setLengthSizeMinusOne(3);
                 avcConfigurationBox.setProfileCompatibility(0);
@@ -303,15 +301,14 @@ public class Track {
 
             AudioSpecificConfig audioSpecificConfig = new AudioSpecificConfig();
             audioSpecificConfig.setAudioObjectType(2);
+            audioSpecificConfig.setOriginalAudioObjectType(2);
             audioSpecificConfig.setSamplingFrequencyIndex(samplingFrequencyIndexMap.get((int) audioSampleEntry.getSampleRate()));
             audioSpecificConfig.setChannelConfiguration(audioSampleEntry.getChannelCount());
             decoderConfigDescriptor.setAudioSpecificInfo(audioSpecificConfig);
 
             descriptor.setDecoderConfigDescriptor(decoderConfigDescriptor);
 
-            ByteBuffer data = descriptor.serialize();
-            //esds.setEsDescriptor(descriptor);
-            esds.setData(data);
+            esds.setEsDescriptor(descriptor);
             audioSampleEntry.addBox(esds);
             sampleDescriptionBox.addBox(audioSampleEntry);
         }
