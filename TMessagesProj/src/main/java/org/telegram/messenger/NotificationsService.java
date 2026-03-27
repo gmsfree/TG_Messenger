@@ -15,6 +15,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -67,7 +68,19 @@ public class NotificationsService extends Service {
                     .setOngoing(true)
                     .setSmallIcon(R.drawable.notification)
                     .setContentText("Telegram push service").build();
-            startForeground(NOTIFICATION_ID,notification);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                        NOTIFICATION_ID,
+                        notification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING |
+                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                );
+            } else {
+                startForeground(
+                        NOTIFICATION_ID,
+                        notification
+                );
+            }
         }
     }
 }
