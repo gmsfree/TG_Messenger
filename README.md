@@ -10,7 +10,7 @@ _Replacement of GMS and proprietary components_
 
 * Location sharing and streaming with Google maps is replaced by OSMDroid
 * Firebase messaging replaced with telegram foreground push service
-* Document scanning(Mrz) via GMS vision is replaced with Zxing PDF
+* Document scanning (Mrz) via GMS vision is replaced with Zxing PDF
 * Stripe payments are moved outside the app - to WebView
 
 _Removal of GMS and proprietary components_
