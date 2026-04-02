@@ -2,7 +2,7 @@
 
 [Telegram](https://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
 
-This is an unofficial, GMS-Free fork of [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger).
+This is an unofficial GMS-Free fork of the [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger).
 
 ### Changes
 
