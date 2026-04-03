@@ -4,23 +4,15 @@ import static org.telegram.messenger.LocaleController.formatPluralString;
 import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.messenger.MessagesController.findUpdatesAndRemove;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
+
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.provider.Settings;
+
 import android.text.TextUtils;
 
-import androidx.annotation.Keep;
 
-import com.google.firebase.appindexing.Action;
-import com.google.firebase.appindexing.FirebaseUserActions;
-import com.google.firebase.appindexing.builders.AssistActionBuilder;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
