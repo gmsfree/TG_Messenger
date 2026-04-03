@@ -21162,7 +21162,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }
         String reason;
         if (chat != null) {
-            reason = getRestrictionReason(chat.restriction_reason);
+            reason = null;
         } else {
             reason = getRestrictionReason(user.restriction_reason);
         }
@@ -21258,7 +21258,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }
         String reason;
         if (chat != null) {
-            reason = getRestrictionReason(chat.restriction_reason);
+            reason = null;
         } else {
             reason = getRestrictionReason(user.restriction_reason);
             if (type != 3 && user.bot) {
