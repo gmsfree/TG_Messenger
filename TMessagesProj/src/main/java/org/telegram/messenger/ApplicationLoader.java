@@ -123,7 +123,7 @@ public class ApplicationLoader extends Application {
     }
 
     protected boolean isStandalone() {
-        return false;
+        return true;
     }
 
     protected boolean isBeta() {

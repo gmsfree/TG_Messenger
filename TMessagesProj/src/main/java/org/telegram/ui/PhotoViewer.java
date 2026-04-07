@@ -891,7 +891,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private ActionBarMenuItem masksItem;
     private ActionBarMenuItem deleteItem;
     private ActionBarMenuSubItem castItem;
-    private CastMediaRouteButton castItemButton;
     private LinearLayout itemsLayout;
     private SpeedButtonsLayout chooseSpeedLayout;
     private ChooseDownloadQualityLayout chooseDownloadQualityLayout;

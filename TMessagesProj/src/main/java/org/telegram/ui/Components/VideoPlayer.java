@@ -1998,4 +1998,42 @@ public class VideoPlayer implements Player.Listener, VideoListener, AnalyticsLis
         }
     }
 
+    public static class OffsetDataSource implements DataSource {
+        private final DataSource upstream;
+        private final long byteOffset;
+
+        public OffsetDataSource(DataSource upstream, long byteOffset) {
+            this.upstream = upstream;
+            this.byteOffset = byteOffset;
+        }
+
+        @Override
+        public void addTransferListener(TransferListener transferListener) {
+            upstream.addTransferListener(transferListener);
+        }
+
+        @Override
+        public long open(DataSpec dataSpec) throws IOException {
+            DataSpec offsetDataSpec = dataSpec.buildUpon()
+                    .setPosition(dataSpec.position + byteOffset)
+                    .build();
+            return upstream.open(offsetDataSpec);
+        }
+
+        @Override
+        public int read(byte[] buffer, int offset, int length) throws IOException {
+            return upstream.read(buffer, offset, length);
+        }
+
+        @Override
+        public Uri getUri() { return upstream.getUri(); }
+
+        @Override
+        public void close() throws IOException { upstream.close(); }
+
+        @Override
+        public Map<String, List<String>> getResponseHeaders() {
+            return upstream.getResponseHeaders();
+        }
+    }
 }

@@ -36,6 +36,7 @@ _Other changes_
 * Default cache size is limited to 5GB*
 * Media file auto-download is disabled by default*
 * Auto-play is disabled for gif's and videos*
+* Applied patch #30513 TLS Fingerprint fixes in MTProxy ClientHello 
 
 \* can be changed in settings
 
