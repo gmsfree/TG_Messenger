@@ -200,7 +200,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "tg-messenger-${variant.buildType.name}-${variant.versionName}-${variant.versionCode}.apk"
+            outputFileName = "tg-messenger-gmsfree-${variant.buildType.name}-${variant.versionName}-${variant.versionCode}.apk"
         }
     }
 }
